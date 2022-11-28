@@ -45,17 +45,4 @@ class SymbolCubit extends Cubit<SymbolState> {
       emit(currState.copyWith(selectedValue2: selectedValue));
     }
   }
-
-  /*void resetSymbolStates() {
-    if (state is SymbolLoaded) {
-      var currState = state as SymbolLoaded;
-     emit(SymbolLoaded(
-       symbols: currState.symbols,
-         selectedValue: currState.selectedValue,
-         selectedValue1:currState.selectedValue1,
-         selectedValue2: currState.selectedValue2,
-
-     ));
-   }
-  }*/
 }
