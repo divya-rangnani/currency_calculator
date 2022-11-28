@@ -20,8 +20,8 @@ class SymbolCubit extends Cubit<SymbolState> {
           selectedValue1: symbolResponse.mappedSymbols?.keys.first,
           selectedValue2: symbolResponse.mappedSymbols?.keys.first));
     } else {
-      emit(const SymbolError(
-          'Something went wrong, please try again in sometime!'));
+      emit(SymbolError(
+          symbolResponse.errorMessage ?? 'Error while performing Operation!'));
     }
   }
 

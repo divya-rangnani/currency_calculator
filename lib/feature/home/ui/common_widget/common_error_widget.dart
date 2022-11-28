@@ -7,10 +7,13 @@ class CommonErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      errorMsg ?? 'Something went wrong, please try again in sometime!',
-      style: const TextStyle(color: Colors.redAccent),
-      textAlign: TextAlign.center,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.6,
+      child: Text(
+        errorMsg ?? 'Something went wrong, please try again in sometime!',
+        style: const TextStyle(color: Colors.redAccent,height: 1.2),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
