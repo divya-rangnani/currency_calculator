@@ -2,6 +2,7 @@ import 'package:currency_calculator/consts/app_const.dart';
 import 'package:currency_calculator/feature/common_widgets/common_button.dart';
 import 'package:currency_calculator/feature/common_widgets/common_drop_down.dart';
 import 'package:currency_calculator/feature/common_widgets/common_text_form_feild_view.dart';
+import 'package:currency_calculator/feature/common_widgets/no_internet/ui/screens/no_internet_screen.dart';
 import 'package:currency_calculator/feature/home/bloc/operation/operation_cubit.dart';
 import 'package:currency_calculator/feature/home/bloc/symbol/symbol_cubit.dart';
 import 'package:currency_calculator/feature/home/ui/common_widget/common_error_widget.dart';
@@ -42,99 +43,64 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppConst.appTitle,
               ),
             ),
-            body: GestureDetector(
-              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(gradient: linearGradient),
-                child: BlocBuilder<SymbolCubit, SymbolState>(
-                    builder: (context, symbolState) {
-                  if (symbolState is SymbolInitial) {
-                    BlocProvider.of<SymbolCubit>(context).getSymbolData();
-                  } else if (symbolState is SymbolLoaded) {
-                    //getting rates of selected currency
-                    context
-                        .read<OperationCubit>()
-                        .getRate(base: symbolState.selectedValue!);
+            body: NoInternetScreen(
+              child: GestureDetector(
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(gradient: linearGradient),
+                  child: BlocBuilder<SymbolCubit, SymbolState>(
+                      builder: (context, symbolState) {
+                    if (symbolState is SymbolInitial) {
+                      BlocProvider.of<SymbolCubit>(context).getSymbolData();
+                    } else if (symbolState is SymbolLoaded) {
+                      //getting rates of selected currency
+                      context
+                          .read<OperationCubit>()
+                          .getRate(base: symbolState.selectedValue!);
 
-                    return SingleChildScrollView(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: BlocBuilder<OperationCubit, OperationState>(
-                              builder: (context, operationState) {
-                            if (operationState is OperationInitial ||
-                                (operationState is RatesLoaded &&
-                                    operationState.mappedRates == null)) {
-                              context
-                                  .read<OperationCubit>()
-                                  .getRate(base: symbolState.selectedValue!);
-                            }
-                            if (operationState is RatesLoaded) {
-                              result = operationState.result ?? "--";
-                              strOperation = operationState.strOperation;
-                            }
-                            return Form(
-                              key: _formKey,
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0, vertical: 4.0),
-                                      child: Text(
-                                        'Output Currency',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6!
-                                            .copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                        textAlign: TextAlign.left,
+                      return SingleChildScrollView(
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0),
+                            child:
+                                BlocBuilder<OperationCubit, OperationState>(
+                                    builder: (context, operationState) {
+                              if (operationState is OperationInitial ||
+                                  (operationState is RatesLoaded &&
+                                      operationState.mappedRates == null)) {
+                                context.read<OperationCubit>().getRate(
+                                    base: symbolState.selectedValue!);
+                              }
+                              if (operationState is RatesLoaded) {
+                                result = operationState.result ?? "--";
+                                strOperation = operationState.strOperation;
+                              }
+                              return Form(
+                                key: _formKey,
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 4.0),
+                                        child: Text(
+                                          'Output Currency',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6!
+                                              .copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                          textAlign: TextAlign.left,
+                                        ),
                                       ),
-                                    ),
-                                    CommonDropDown(
-                                      value: symbolState.selectedValue ??
-                                          symbolState
-                                              .symbols?.entries.first.key,
-                                      hintText: 'Select a Symbol',
-                                      items: symbolState.symbols?.entries
-                                          .map<DropdownMenuItem<String>>(
-                                            (value) => DropdownMenuItem<String>(
-                                              value: value.key,
-                                              child: Text(value.key),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (String? value) {
-                                        if (value != null) {
-                                          //changing output currency
-                                          context
-                                              .read<SymbolCubit>()
-                                              .selectOutputSymbol(value);
-                                          //changing state of inputs
-                                          context
-                                              .read<OperationCubit>()
-                                              .resetOperationStates();
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 24.0,
-                                    ),
-                                    CommonTextFormField(
-                                      controller: textEditingController1,
-                                      hintText: 'Enter Number',
-                                      title: 'Text Input 1',
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(8),
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r"[0-9.]")),
-                                      ],
-                                      suffixIcon: CommonDropDown(
-                                        isSuffix: true,
-                                        value: symbolState.selectedValue1 ??
+                                      CommonDropDown(
+                                        value: symbolState.selectedValue ??
                                             symbolState
                                                 .symbols?.entries.first.key,
                                         hintText: 'Select a Symbol',
@@ -149,203 +115,264 @@ class _HomeScreenState extends State<HomeScreen> {
                                             .toList(),
                                         onChanged: (String? value) {
                                           if (value != null) {
-                                            //updating value of input1
+                                            //changing output currency
                                             context
                                                 .read<SymbolCubit>()
-                                                .selectInput1Symbol(value);
-                                            //changing state of inputs because result may vary
+                                                .selectOutputSymbol(value);
+                                            //changing state of inputs
                                             context
                                                 .read<OperationCubit>()
                                                 .resetOperationStates();
                                           }
                                         },
                                       ),
-                                      validator: (val) {
-                                        if (val == null ||
-                                            val.toString().isEmpty) {
-                                          return "Please enter Text Input 1";
-                                        }
-                                      },
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                              decimal: true),
-                                    ),
-                                    CommonTextFormField(
-                                      controller: textEditingController2,
-                                      hintText: 'Enter Number',
-                                      title: 'Text Input 2',
-                                      inputFormatters: [
-                                        //allowing user to enter numbers only (up to 8 digits)
-                                        LengthLimitingTextInputFormatter(8),
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r"[0-9.]")),
-                                      ],
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                              decimal: true),
-                                      validator: (val) {
-                                        if (val == null ||
-                                            val.toString().isEmpty) {
-                                          return "Please enter Text Input 2";
-                                        }
-                                      },
-                                      suffixIcon: CommonDropDown(
-                                        isSuffix: true,
-                                        value: symbolState.selectedValue2 ??
-                                            symbolState
-                                                .symbols?.entries.first.key,
-                                        hintText: 'Select a Symbol',
-                                        items: symbolState.symbols?.entries
-                                            .map<DropdownMenuItem<String>>(
-                                              (value) =>
-                                                  DropdownMenuItem<String>(
-                                                value: value.key,
-                                                child: Text(value.key),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged: (String? value) {
-                                          if (value != null) {
-                                            //updating value of input2
-                                            context
-                                                .read<SymbolCubit>()
-                                                .selectInput2Symbol(value);
-                                            //changing state of inputs because result may vary
-                                            context
-                                                .read<OperationCubit>()
-                                                .resetOperationStates();
-                                          }
-                                        },
+                                      const SizedBox(
+                                        height: 24.0,
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 24.0,
-                                    ),
-                                    Center(
-                                      child: Column(
-                                        children: [
-                                          //adding horizontal scroll because UI may cause issue for smaller devices
-                                          // also, we can add as many operations as it can be accessed by scrolling
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                OperationWidget(
-                                                  operation: OPERATION.addition,
-                                                  onTap: () {
-                                                    manageClick(
-                                                        OPERATION.addition,
-                                                        symbolState);
-                                                  },
-                                                ),
-                                                const SizedBox(
-                                                  width: 12.0,
-                                                ),
-                                                OperationWidget(
-                                                  operation:
-                                                      OPERATION.subtraction,
-                                                  onTap: () {
-                                                    manageClick(
-                                                        OPERATION.subtraction,
-                                                        symbolState);
-                                                  },
-                                                ),
-                                                const SizedBox(
-                                                  width: 12.0,
-                                                ),
-                                                OperationWidget(
-                                                  operation: OPERATION.multiply,
-                                                  onTap: () {
-                                                    manageClick(
-                                                        OPERATION.multiply,
-                                                        symbolState);
-                                                  },
-                                                ),
-                                                const SizedBox(
-                                                  width: 12.0,
-                                                ),
-                                                OperationWidget(
-                                                  operation: OPERATION.division,
-                                                  onTap: () {
-                                                    manageClick(
-                                                        OPERATION.division,
-                                                        symbolState);
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 24.0,
-                                          ),
-                                          operationState is OperationLoading
-                                              ? const CircularProgressIndicator(
-                                                  color: Colors.blue)
-                                              : operationState
-                                                      is OperationLoading
-                                                  ? const CommonErrorWidget(
-                                                      errorMsg:
-                                                          'Error while performing Operation',
-                                                    )
-                                                  : result == "--"
-                                                      ? const SizedBox()
-                                                      : RichText(
-                                                          text: TextSpan(
-                                                            text:
-                                                                "Result ${strOperation != null ? "of $strOperation" : ""} is \n",
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText1!
-                                                                .copyWith(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                            children: <
-                                                                TextSpan>[
-                                                              TextSpan(
-                                                                text:
-                                                                    "${symbolState.selectedValue!} $result",
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5!
-                                                                    .copyWith(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w700,
-                                                                        height:
-                                                                            1.5),
-                                                              )
-                                                            ],
-                                                          ),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        ),
-                                          CommonButton(
-                                            title: 'Reset',
-                                            linearGradient: linearGradient,
-                                            onTap: onReset,
-                                          )
+                                      CommonTextFormField(
+                                        controller: textEditingController1,
+                                        hintText: 'Enter Number',
+                                        title: 'Text Input 1',
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(
+                                              8),
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r"[0-9.]")),
                                         ],
+                                        suffixIcon: CommonDropDown(
+                                          isSuffix: true,
+                                          value:
+                                              symbolState.selectedValue1 ??
+                                                  symbolState.symbols
+                                                      ?.entries.first.key,
+                                          hintText: 'Select a Symbol',
+                                          items: symbolState
+                                              .symbols?.entries
+                                              .map<
+                                                  DropdownMenuItem<String>>(
+                                                (value) => DropdownMenuItem<
+                                                    String>(
+                                                  value: value.key,
+                                                  child: Text(value.key),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (String? value) {
+                                            if (value != null) {
+                                              //updating value of input1
+                                              context
+                                                  .read<SymbolCubit>()
+                                                  .selectInput1Symbol(
+                                                      value);
+                                              //changing state of inputs because result may vary
+                                              context
+                                                  .read<OperationCubit>()
+                                                  .resetOperationStates();
+                                            }
+                                          },
+                                        ),
+                                        validator: (val) {
+                                          if (val == null ||
+                                              val.toString().isEmpty) {
+                                            return "Please enter Text Input 1";
+                                          }
+                                        },
+                                        keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                            decimal: true),
                                       ),
-                                    )
-                                  ]),
-                            );
-                          })),
-                    );
-                  } else if (symbolState is SymbolError) {
-                    return const CommonErrorWidget();
-                  }
-                  return const CircularProgressIndicator(color: Colors.blue);
-                }),
+                                      CommonTextFormField(
+                                        controller: textEditingController2,
+                                        hintText: 'Enter Number',
+                                        title: 'Text Input 2',
+                                        inputFormatters: [
+                                          //allowing user to enter numbers only (up to 8 digits)
+                                          LengthLimitingTextInputFormatter(
+                                              8),
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r"[0-9.]")),
+                                        ],
+                                        keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                            decimal: true),
+                                        validator: (val) {
+                                          if (val == null ||
+                                              val.toString().isEmpty) {
+                                            return "Please enter Text Input 2";
+                                          }
+                                        },
+                                        suffixIcon: CommonDropDown(
+                                          isSuffix: true,
+                                          value:
+                                              symbolState.selectedValue2 ??
+                                                  symbolState.symbols
+                                                      ?.entries.first.key,
+                                          hintText: 'Select a Symbol',
+                                          items: symbolState
+                                              .symbols?.entries
+                                              .map<
+                                                  DropdownMenuItem<String>>(
+                                                (value) => DropdownMenuItem<
+                                                    String>(
+                                                  value: value.key,
+                                                  child: Text(value.key),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (String? value) {
+                                            if (value != null) {
+                                              //updating value of input2
+                                              context
+                                                  .read<SymbolCubit>()
+                                                  .selectInput2Symbol(
+                                                      value);
+                                              //changing state of inputs because result may vary
+                                              context
+                                                  .read<OperationCubit>()
+                                                  .resetOperationStates();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 24.0,
+                                      ),
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            //adding horizontal scroll because UI may cause issue for smaller devices
+                                            // also, we can add as many operations as it can be accessed by scrolling
+                                            SingleChildScrollView(
+                                              scrollDirection:
+                                                  Axis.horizontal,
+                                              child: Row(
+                                                mainAxisSize:
+                                                    MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  OperationWidget(
+                                                    operation:
+                                                        OPERATION.addition,
+                                                    onTap: () {
+                                                      manageClick(
+                                                          OPERATION
+                                                              .addition,
+                                                          symbolState);
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 12.0,
+                                                  ),
+                                                  OperationWidget(
+                                                    operation: OPERATION
+                                                        .subtraction,
+                                                    onTap: () {
+                                                      manageClick(
+                                                          OPERATION
+                                                              .subtraction,
+                                                          symbolState);
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 12.0,
+                                                  ),
+                                                  OperationWidget(
+                                                    operation:
+                                                        OPERATION.multiply,
+                                                    onTap: () {
+                                                      manageClick(
+                                                          OPERATION
+                                                              .multiply,
+                                                          symbolState);
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 12.0,
+                                                  ),
+                                                  OperationWidget(
+                                                    operation:
+                                                        OPERATION.division,
+                                                    onTap: () {
+                                                      manageClick(
+                                                          OPERATION
+                                                              .division,
+                                                          symbolState);
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 24.0,
+                                            ),
+                                            operationState
+                                                    is OperationLoading
+                                                ? const CircularProgressIndicator(
+                                                    color: Colors.blue)
+                                                : operationState
+                                                        is OperationLoading
+                                                    ? const CommonErrorWidget(
+                                                        errorMsg:
+                                                            'Error while performing Operation',
+                                                      )
+                                                    : result == "--"
+                                                        ? const SizedBox()
+                                                        : RichText(
+                                                            text: TextSpan(
+                                                              text:
+                                                                  "Result ${strOperation != null ? "of $strOperation" : ""} is \n",
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1!
+                                                                  .copyWith(
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                              children: <
+                                                                  TextSpan>[
+                                                                TextSpan(
+                                                                  text:
+                                                                      "${symbolState.selectedValue!} $result",
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .headline5!
+                                                                      .copyWith(
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.w700,
+                                                                          height: 1.5),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            textAlign:
+                                                                TextAlign
+                                                                    .center,
+                                                          ),
+                                            CommonButton(
+                                              title: 'Reset',
+                                              linearGradient:
+                                                  linearGradient,
+                                              onTap: onReset,
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ]),
+                              );
+                            })),
+                      );
+                    } else if (symbolState is SymbolError) {
+                      return const CommonErrorWidget();
+                    }
+                    return const CircularProgressIndicator(
+                        color: Colors.blue);
+                  }),
+                ),
               ),
             )));
   }

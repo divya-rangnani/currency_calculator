@@ -1,5 +1,6 @@
 import 'package:currency_calculator/consts/app_const.dart';
 import 'package:currency_calculator/core/config/navigation_service.dart';
+import 'package:currency_calculator/feature/common_widgets/no_internet/bloc/network_bloc.dart';
 import 'package:currency_calculator/feature/home/bloc/operation/operation_cubit.dart';
 import 'package:currency_calculator/feature/home/bloc/symbol/symbol_cubit.dart';
 import 'package:currency_calculator/feature/home/ui/home_screen.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: MultiBlocProvider(providers: [
+          BlocProvider(create: (context) => NetworkBloc()..add(ListenConnection())),
           BlocProvider(create: (context) => SymbolCubit()),
           BlocProvider(create: (context) => OperationCubit()),
         ], child: const HomeScreen()));

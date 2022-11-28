@@ -20,7 +20,7 @@ class ApiRepository extends AppRepository {
       CacheConfig(
         baseUrl: AppConst.baseUrl,
       ),
-    ).interceptor
+    ).interceptor,
   ]);
 
   @override
