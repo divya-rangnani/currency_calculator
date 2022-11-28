@@ -2,7 +2,7 @@ import 'package:currency_calculator/consts/app_const.dart';
 import 'package:currency_calculator/feature/common_widgets/common_button.dart';
 import 'package:currency_calculator/feature/common_widgets/common_drop_down.dart';
 import 'package:currency_calculator/feature/common_widgets/common_text_form_feild_view.dart';
-import 'package:currency_calculator/feature/common_widgets/no_internet/ui/screens/no_internet_screen.dart';
+import 'package:currency_calculator/feature/common_widgets/no_internet/ui/screens/connectivity_screen.dart';
 import 'package:currency_calculator/feature/home/bloc/operation/operation_cubit.dart';
 import 'package:currency_calculator/feature/home/bloc/symbol/symbol_cubit.dart';
 import 'package:currency_calculator/feature/home/ui/common_widget/common_error_widget.dart';
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppConst.appTitle,
               ),
             ),
-            body: NoInternetScreen(
+            body: ConnectivityScreen(
               child: GestureDetector(
                 onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                 child: Container(

@@ -13,6 +13,7 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
 
   StreamSubscription? _subscription;
 
+  @override
   Stream<NetworkState> mapEventToState(NetworkEvent event) async* {
     if (event is ListenConnection) {
       _subscription =

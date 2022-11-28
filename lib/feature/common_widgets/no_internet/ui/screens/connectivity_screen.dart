@@ -2,14 +2,14 @@ import 'package:currency_calculator/feature/common_widgets/no_internet/bloc/netw
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class NoInternetScreen extends StatefulWidget {
+class ConnectivityScreen extends StatefulWidget {
   final Widget? child;
   final VoidCallback? onRetry;
   final bool showSnackBar;
   final bool resizeToAvoidBottomInset;
   final bool automaticRetry;
 
-  const NoInternetScreen({
+  const ConnectivityScreen({
     Key? key,
     this.child,
     this.onRetry,
@@ -19,10 +19,10 @@ class NoInternetScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<NoInternetScreen> createState() => _NoInternetScreenState();
+  State<ConnectivityScreen> createState() => _ConnectivityScreenState();
 }
 
-class _NoInternetScreenState extends State<NoInternetScreen> {
+class _ConnectivityScreenState extends State<ConnectivityScreen> {
 
   @override
   void initState() {
@@ -40,6 +40,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
         }
       }, builder: (context, state) {
         if (state is ConnectionFailure) {
+          //return widget with offline mode indication
           return Column(
             children: [
               Padding(
@@ -71,6 +72,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
             ],
           );
         } else {
+          //return widget directly if has internet
           return Center(child: widget.child ?? const SizedBox());
         }
       });

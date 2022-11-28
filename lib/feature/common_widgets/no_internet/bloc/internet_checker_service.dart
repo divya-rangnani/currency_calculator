@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+
 class InternetConnectionCheckerService {
   //static int secDelay = 5;
   static get hasConnection async {
@@ -13,13 +15,10 @@ class InternetConnectionCheckerService {
 
       if ((result1.isNotEmpty && result1.first.rawAddress.isNotEmpty) ||
           (result2.isNotEmpty && result2.first.rawAddress.isNotEmpty)) {
-        // secDelay = 5;
         return true;
       }
     } catch (e) {
-      // secDelay = 5;
-
-      print(e);
+      debugPrint(e.toString());
     }
     return false;
   }

@@ -10,8 +10,3 @@ class ConnectionChanged extends NetworkEvent {
 }
 
 class FetchNetworkStatus extends NetworkEvent{}
-
-class ShowSnackbarEvent extends NetworkEvent{
-  bool showSnackbar;
-  ShowSnackbarEvent(this.showSnackbar);
-}
