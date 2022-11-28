@@ -312,10 +312,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ? const CircularProgressIndicator(
                                                     color: Colors.blue)
                                                 : operationState
-                                                        is OperationLoading
-                                                    ? const CommonErrorWidget(
+                                                        is OperationError
+                                                    ? CommonErrorWidget(
                                                         errorMsg:
-                                                            'Error while performing Operation',
+                                                        operationState.message,
                                                       )
                                                     : result == "--"
                                                         ? const SizedBox()

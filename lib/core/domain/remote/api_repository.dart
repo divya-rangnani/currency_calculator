@@ -25,40 +25,53 @@ class ApiRepository extends AppRepository {
 
   @override
   Future<SymbolResponse> getSymbols() async {
-    final headers = {"apikey": AppConst.apiKey};
-    final response = await _dioClient.dioInstance!.get(AppConst.getSymbols,
-        options: buildCacheOptions(const Duration(days: 3),
-            options: Options(
-              headers: headers,
-            )));
-    if (response.statusCode == 200) {
-      return SymbolResponse.fromJson(response.data);
-    } else {
-      return SymbolResponse.withError(response.statusMessage ??
-          'Something went wrong, please try again later.');
+    try {
+      final headers = {"apikey": AppConst.apiKey};
+      final response = await _dioClient.dioInstance!.get(AppConst.getSymbols,
+          options: buildCacheOptions(const Duration(days: 3),
+              options: Options(
+                headers: headers,
+              )));
+      if (response.statusCode == 200) {
+        return SymbolResponse.fromJson(response.data);
+      } else {
+        return SymbolResponse.withError(response.statusMessage ??
+            'Something went wrong, please try again later.');
+      }
+    }on Exception catch (error) {
+      return SymbolResponse.withError(error is DioError
+          ? _dioClient.handleError(error)
+          : "Something went wrong!");
     }
   }
 
   @override
   Future<LatestResponse> getRates({String? base, List<String>? symbols}) async {
-    final headers = {
-      "apikey": AppConst.apiKey,
-    };
-    var url = '${AppConst.latest}?base=$base';
-    if(symbols!=null){
-      url = '$url&symbols=${symbols.first},${symbols.last}';
+    try {
+      final headers = {
+        "apikey": AppConst.apiKey,
+      };
+      var url = '${AppConst.latest}?base=$base';
+      if (symbols != null) {
+        url = '$url&symbols=${symbols.first},${symbols.last}';
+      }
+      final response = await _dioClient.dioInstance!.get(
+          url,
+          options: buildCacheOptions(const Duration(days: 3),
+              options: Options(
+                headers: headers,
+              )));
+      if (response.statusCode == 200) {
+        return LatestResponse.fromJson(response.data);
+      } else {
+        return LatestResponse.withError(response.statusMessage ??
+            'Something went wrong, please try again later.');
+      }
+    }on Exception catch (error) {
+      return LatestResponse.withError(error is DioError
+          ? _dioClient.handleError(error)
+          : "Something went wrong!");
     }
-    final response = await _dioClient.dioInstance!.get(
-        url,
-        options: buildCacheOptions(const Duration(days: 3),
-            options: Options(
-              headers: headers,
-            )));
-    if (response.statusCode == 200) {
-      return LatestResponse.fromJson(response.data);
-    } else {
-      return LatestResponse.withError(response.statusMessage ??
-          'Something went wrong, please try again later.');
-    }
+
   }
 }

@@ -16,8 +16,8 @@ class OperationCubit extends Cubit<OperationState> {
     if (latestResponse.mappedRates != null) {
       emit(RatesLoaded(mappedRates: latestResponse.mappedRates));
     } else {
-      emit(const OperationError(
-          'Something went wrong, please try again in sometime!'));
+      emit(OperationError(
+          latestResponse.errorMessage ?? 'Error while performing Operation!'));
     }
   }
 
@@ -112,20 +112,19 @@ class OperationCubit extends Cubit<OperationState> {
     OperationState currentState = state;
     if (currentState is RatesLoaded) {
       emit(OperationLoading());
-     emit(RatesLoaded(
-         mappedRates: currentState.mappedRates,
-         base: null,
-         currencyOfInput1: null,
-         currencyOfInput2: null,
-         exchangeRateOfInput1: null,
-         exchangeRateOfInput2: null,
-         result: null,
-         operation: null,
-         strOperation: null));
-    }else{
+      emit(RatesLoaded(
+          mappedRates: currentState.mappedRates,
+          base: null,
+          currencyOfInput1: null,
+          currencyOfInput2: null,
+          exchangeRateOfInput1: null,
+          exchangeRateOfInput2: null,
+          result: null,
+          operation: null,
+          strOperation: null));
+    } else {
       emit(OperationInitial());
     }
-
   }
 }
 
